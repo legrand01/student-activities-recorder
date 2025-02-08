@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Activities Recorder 🎓</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f7ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .container::before {
+            content: '📚';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .cute-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Student Activities Recorder ✨</h1>
+        <form id="studentForm">
+            <div class="form-group">
+                <label>📝 Assignments</label>
+                <input type="text" id="assignments" name="assignments" required placeholder="Enter assignments...">
+            </div>
+            <div class="form-group">
+                <label>👥 Assistants</label>
+                <input type="text" id="assistants" name="assistants" required placeholder="Enter assistants...">
+            </div>
+            <div class="form-group">
+                <label>👤 Student First Name</label>
+                <input type="text" id="firstName" name="firstName" required placeholder="Enter student's first name...">
+            </div>
+            <div class="form-group">
+                <label>📅 Month</label>
+                <input type="date" id="month" name="month" required>
+            </div>
+            <button type="submit">🚀 Save Activity</button>
+        </form>
+        <div id="successMessage" class="success-message">
+            ✅ Activity recorded successfully!
+        </div>
+        <div id="errorMessage" class="error-message">
+            ❌ Error recording activity. Please try again.
+        </div>
+    </div>
+    <script src="/app.js"></script>
+</body>
+</html>
