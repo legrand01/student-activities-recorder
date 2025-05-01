@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inactive Students Finder 🔍</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f7ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .container::before {
+            content: '🔍';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .results-container {
+            margin-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th, .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .results-table th {
+            background-color: #f5f9ff;
+            color: #4a90e2;
+            font-weight: 600;
+        }
+
+        .results-table tr:hover {
+            background-color: #f5f9ff;
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .tab.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .exclude-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .exclude-item {
+            background-color: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .exclude-item span {
+            margin-right: 5px;
+        }
+
+        .exclude-item button {
+            background: none;
+            border: none;
+            color: #721c24;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            color: #4a90e2;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Inactive Students Finder ✨</h1>
+        
+        <div class="tab-container">
+            <div class="tab active" data-gender="all">All Students</div>
+            <div class="tab" data-gender="female">Female Students</div>
+            <div class="tab" data-gender="male">Male Students</div>
+        </div>
+        
+        <form id="inactiveStudentsForm">
+            <div class="form-group">
+                <label>📅 Inactive For</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button type="button" id="currentMonthBtn" class="month-btn" style="flex: 1; background-color: #6c757d;">Current Month</button>
+                </div>
+                <select id="monthsInactive" name="monthsInactive" required>
+                    <option value="current">Current Month</option>
+                    <option value="1">Current Month</option>
+                    <option value="2">Current + Previous Month</option>
+                    <option value="3">Current + 2 Previous Months</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="customRangeGroup" style="display: none;">
+                <label>📆 Custom Date Range</label>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 14px;">Start Date</label>
+                        <input type="date" id="startDate" name="startDate">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 14px;">End Date</label>
+                        <input type="date" id="endDate" name="endDate">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>🚫 Exclude Students (comma-separated names)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="excludeStudent" placeholder="Enter student name...">
+                    <button type="button" id="addExcludeBtn" style="width: auto; padding: 12px;">Add</button>
+                </div>
+                <div class="exclude-list" id="excludeList"></div>
+                <input type="hidden" id="excludedStudents" name="excludedStudents" value="">
+            </div>
+            
+            <button type="submit">🔍 Find Inactive Students</button>
+        </form>
+        
+        <div id="errorMessage" class="error-message">
+            ❌ Error finding inactive students. Please try again.
+        </div>
+        
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h2 id="resultsTitle">Inactive Students</h2>
+            <div id="resultsCount" style="margin-bottom: 15px; color: #666;"></div>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Gender</th>
+                        <th>Last Activity</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                    <!-- Results will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html">← Back to Activity Recorder</a>
+        </div>
+    </div>
+    
+    <script>
+        // Show/hide custom range based on selection
+        document.getElementById('monthsInactive').addEventListener('change', function() {
+            const customRangeGroup = document.getElementById('customRangeGroup');
+            if (this.value === 'custom') {
+                customRangeGroup.style.display = 'block';
+            } else {
+                customRangeGroup.style.display = 'none';
+            }
+        });
+        
+        // Current month button handler
+        document.getElementById('currentMonthBtn').addEventListener('click', function() {
+            document.getElementById('monthsInactive').value = 'current';
+            document.getElementById('customRangeGroup').style.display = 'none';
+            
+            // Submit the form automatically
+            document.getElementById('inactiveStudentsForm').dispatchEvent(new Event('submit'));
+        });
+        
+        // Handle tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Handle adding excluded students
+        document.getElementById('addExcludeBtn').addEventListener('click', function() {
+            const excludeInput = document.getElementById('excludeStudent');
+            const name = excludeInput.value.trim();
+            
+            if (name) {
+                addExcludedStudent(name);
+                excludeInput.value = '';
+            }
+        });
+        
+        function addExcludedStudent(name) {
+            const excludeList = document.getElementById('excludeList');
+            const excludedStudentsInput = document.getElementById('excludedStudents');
+            
+            // Create element
+            const item = document.createElement('div');
+            item.className = 'exclude-item';
+            item.innerHTML = `
+                <span>${name}</span>
+                <button type="button" class="remove-exclude">✕</button>
+            `;
+            
+            // Add remove functionality
+            item.querySelector('.remove-exclude').addEventListener('click', function() {
+                item.remove();
+                updateExcludedStudentsInput();
+            });
+            
+            excludeList.appendChild(item);
+            updateExcludedStudentsInput();
+        }
+        
+        function updateExcludedStudentsInput() {
+            const excludeItems = document.querySelectorAll('.exclude-item span');
+            const names = Array.from(excludeItems).map(item => item.textContent);
+            document.getElementById('excludedStudents').value = names.join(',');
+        }
+        
+        // Form submission
+        document.getElementById('inactiveStudentsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const monthsInactive = document.getElementById('monthsInactive').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const excludedStudents = document.getElementById('excludedStudents').value;
+            const gender = document.querySelector('.tab.active').dataset.gender;
+            
+            // Update button text to show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ Loading...';
+            
+            // Validate custom range if selected
+            if (monthsInactive === 'custom' && (!startDate || !endDate)) {
+                document.getElementById('errorMessage').textContent = '❌ Please select both start and end dates for custom range';
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/inactive-students', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        monthsInactive,
+                        startDate: startDate || null,
+                        endDate: endDate || null,
+                        excludedStudents,
+                        gender
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayResults(result.data, gender);
+                    document.getElementById('errorMessage').style.display = 'none';
+                } else {
+                    throw new Error(result.message || 'Failed to find inactive students');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = `❌ ${error.message}`;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('resultsContainer').style.display = 'none';
+            } finally {
+                // Restore button text
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+        
+        function displayResults(students, gender) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            const resultsTitle = document.getElementById('resultsTitle');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            // Clear previous results
+            resultsTableBody.innerHTML = '';
+            
+            // Update title based on gender
+            if (gender === 'female') {
+                resultsTitle.textContent = 'Inactive Female Students';
+            } else if (gender === 'male') {
+                resultsTitle.textContent = 'Inactive Male Students';
+            } else {
+                resultsTitle.textContent = 'Inactive Students';
+            }
+            
+            // Update count
+            resultsCount.textContent = `Found ${students.length} inactive student${students.length !== 1 ? 's' : ''}`;
+            
+            // Add results to table
+            if (students.length === 0) {
+                resultsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">
+                            No inactive students found matching your criteria
+                        </td>
+                    </tr>
+                `;
+            } else {
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.first_name}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.last_activity || 'Never'}</td>
+                    `;
+                    resultsTableBody.appendChild(row);
+                });
+            }
+            
+            // Show results
+            resultsContainer.style.display = 'block';
+        }
+        
+        // Add some default excluded students from the example
+        const defaultExcluded = {
+            female: ['Verona', 'Chitra', 'Elin', 'Mimi', 'Ruth', 'Patricia', 'Rhiannon', 'Clarice', 'Violet', 'Claudia', 'Ansula'],
+            male: ['Andy', 'Kwan', 'Rajah', 'Robert', 'Andrew', 'Thian', 'Lekan', 'Luke', 'Adrian']
+        };
+        
+        // Add a few examples to start with
+        addExcludedStudent('Verona');
+        addExcludedStudent('Andy');
+    </script>
+</body>
+</html>
